@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "873605206469",
+    "firebase_url": "https://fir-df6b1-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "fir-df6b1",
+    "storage_bucket": "fir-df6b1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:873605206469:android:483bf0345a61fbf4153bac",
+        "android_client_info": {
+          "package_name": "com.gorik333Games.Firebase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "873605206469-qtmntevot0357e4g8rf4p6kemhtcflra.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjsp9qvDUR0b8no3F5AQPKJWltYOojRbA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "873605206469-qtmntevot0357e4g8rf4p6kemhtcflra.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
