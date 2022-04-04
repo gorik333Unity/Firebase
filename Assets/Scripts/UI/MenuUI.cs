@@ -7,6 +7,6 @@ namespace Game.UI
     public class MenuUI : MonoBehaviour
     {
         [SerializeField]
-        private FirebaseTest _firebaseTest;
+        private FirebaseDataUI _firebaseTest;
     }
 }

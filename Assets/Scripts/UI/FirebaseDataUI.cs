@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Game.DB;
 
 namespace Game.UI
 {
-    public class FirebaseTest : MonoBehaviour
+    public class FirebaseDataUI : MonoBehaviour
     {
         [SerializeField]
         private TMP_InputField _inputField;
