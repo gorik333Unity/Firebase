@@ -1,16 +1,19 @@
 using Firebase.Database;
 using Firebase.Auth;
 using UnityEngine;
-using Game.UI;
-using System.Linq;
 using System.Collections;
-using System.Threading.Tasks;
 
 namespace Game.DB
 {
     public class Database : MonoBehaviour
     {
         private const string USERS = "users";
+        private const string NAME = "Name";
+        private const string AGE = "Age";
+        private const string STATE = "On-line";
+
+        private const int MIN_YEARS = 20;
+        private const int MAX_YEARS = 80;
 
         private DatabaseReference _databaseReference;
         private FirebaseAuth _firebaseAuth;
@@ -27,7 +30,7 @@ namespace Game.DB
 
         public void SaveData(string userName)
         {
-            var user = new User(userName, Random.Range(20, 80), "On-line");
+            var user = new User(userName, Random.Range(MIN_YEARS, MAX_YEARS), STATE);
             string jsonUser = JsonUtility.ToJson(user);
             _databaseReference.Child(USERS).Child(userName).SetRawJsonValueAsync(jsonUser);
         }
@@ -62,9 +65,7 @@ namespace Game.DB
 
         private void FirebaseAuth_StateChanged(object sender, System.EventArgs e)
         {
-            // check if successed loging
-
-            Debug.Log("Auth state changed");
+            Debug.Log("check if successed loging");
         }
 
         private IEnumerator TrySignIn(string email, string password)
@@ -102,7 +103,9 @@ namespace Game.DB
                 DataSnapshot snapshot = users.Result;
 
                 foreach (var item in snapshot.Children)
-                    Debug.Log(item.Child("Name").Value.ToString() + " " + item.Child("Age").Value.ToString());
+                {
+                    Debug.Log(item.Child(NAME).Value.ToString() + " " + item.Child(AGE).Value.ToString());
+                }
             }
         }
 
@@ -116,22 +119,8 @@ namespace Game.DB
             {
                 DataSnapshot snapshot = user.Result;
 
-                Debug.Log(snapshot.Child("Age").Value.ToString() + " " + snapshot.Child("Name").Value.ToString());
+                Debug.Log(snapshot.Child(NAME).Value.ToString() + " " + snapshot.Child(AGE).Value.ToString());
             }
-        }
-    }
-
-    public class User
-    {
-        public string Name;
-        public int Age;
-        public string Status;
-
-        public User(string name, int age, string status)
-        {
-            Name = name;
-            Age = age;
-            Status = status;
         }
     }
 }
