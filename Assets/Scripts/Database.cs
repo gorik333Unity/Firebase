@@ -1,7 +1,8 @@
 using Firebase.Database;
 using Firebase.Auth;
 using UnityEngine;
-using System.Collections;
+using System.Threading.Tasks;
+using System;
 
 namespace Game.DB
 {
@@ -20,34 +21,32 @@ namespace Game.DB
 
         public void SignIn(string email, string password)
         {
-            StartCoroutine(TrySignIn(email, password));
+            var task = TrySignInAsync(email, password);
         }
 
         public void SignUp(string email, string password)
         {
-            StartCoroutine(TrySignUp(email, password));
+            var task = TrySignUpAsync(email, password);
         }
 
         public void SaveData(string userName)
         {
-            var user = new User(userName, Random.Range(MIN_YEARS, MAX_YEARS), STATE);
-            string jsonUser = JsonUtility.ToJson(user);
-            _databaseReference.Child(USERS).Child(userName).SetRawJsonValueAsync(jsonUser);
+            var task = TrySaveData(userName);
         }
 
         public void LoadData(string userName)
         {
-            StartCoroutine(TryLoadData(userName));
+            var task = TryLoadDataAsync(userName);
         }
 
         public void RemoveData(string userName)
         {
-            _databaseReference.Child(USERS).Child(userName).RemoveValueAsync();
+            var task = TryRemoveData(userName);
         }
 
         public void ShowOrderedDataByChild(string value)
         {
-            StartCoroutine(TryShowOrderedDataByChild(value));
+            var task = TryShowOrderedDataByChildAsync(value);
         }
 
         private void Awake()
@@ -59,67 +58,117 @@ namespace Game.DB
         private void Start()
         {
             _firebaseAuth.StateChanged += FirebaseAuth_StateChanged;
-
             _firebaseAuth.SignOut(); // if don't want auto sing in on application start
         }
 
         private void FirebaseAuth_StateChanged(object sender, System.EventArgs e)
         {
-            Debug.Log("check if successed loging");
+            Debug.Log("Auth state changed");
         }
 
-        private IEnumerator TrySignIn(string email, string password)
+        private async Task TrySaveData(string userName)
         {
-            var user = _firebaseAuth.SignInWithEmailAndPasswordAsync(email, password);
-
-            yield return new WaitUntil(() => user.IsCompleted);
-
-            if (user.Result != null && user.Exception == null)
+            try
             {
-                Debug.Log("Success sign in");
+                var user = new User(userName, UnityEngine.Random.Range(MIN_YEARS, MAX_YEARS), STATE);
+                string jsonUser = JsonUtility.ToJson(user);
+
+                await _databaseReference.Child(USERS).Child(userName).SetRawJsonValueAsync(jsonUser);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
         }
 
-        private IEnumerator TrySignUp(string email, string password)
+        private async Task TryRemoveData(string userName)
         {
-            var user = _firebaseAuth.CreateUserWithEmailAndPasswordAsync(email, password);
-
-            yield return new WaitUntil(() => user.IsCompleted);
-
-            if (user.Result != null && user.Exception == null)
+            try
             {
-                Debug.Log("Success sign up");
+                await _databaseReference.Child(USERS).Child(userName).RemoveValueAsync();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
         }
 
-        private IEnumerator TryShowOrderedDataByChild(string value)
+        private async Task TrySignInAsync(string email, string password)
         {
-            var users = _databaseReference.Child(USERS).OrderByChild(value).GetValueAsync();
-
-            yield return new WaitUntil(() => users.IsCompleted);
-
-            if (users.Result != null && users.Exception == null)
+            try
             {
-                DataSnapshot snapshot = users.Result;
+                var user = _firebaseAuth.SignInWithEmailAndPasswordAsync(email, password);
+                await user;
 
-                foreach (var item in snapshot.Children)
+                if (user.Result != null)
                 {
-                    Debug.Log(item.Child(NAME).Value.ToString() + " " + item.Child(AGE).Value.ToString());
+                    Debug.Log("Success sign in");
                 }
             }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
         }
 
-        private IEnumerator TryLoadData(string userName)
+        private async Task TrySignUpAsync(string email, string password)
         {
-            var user = _databaseReference.Child(USERS).Child(userName).GetValueAsync();
-
-            yield return new WaitUntil(() => user.IsCompleted);
-
-            if (user.Result != null && user.Exception == null)
+            try
             {
-                DataSnapshot snapshot = user.Result;
+                var user = _firebaseAuth.CreateUserWithEmailAndPasswordAsync(email, password);
+                await user;
 
-                Debug.Log(snapshot.Child(NAME).Value.ToString() + " " + snapshot.Child(AGE).Value.ToString());
+                if (user.Result != null)
+                {
+                    Debug.Log("Success sign up");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        private async Task TryShowOrderedDataByChildAsync(string value)
+        {
+            try
+            {
+                var users = _databaseReference.Child(USERS).OrderByChild(value).GetValueAsync();
+                await users;
+
+                if (users.Result != null)
+                {
+                    DataSnapshot snapshot = users.Result;
+
+                    foreach (var item in snapshot.Children)
+                    {
+                        Debug.Log(item.Child(NAME).Value.ToString() + " " + item.Child(AGE).Value.ToString());
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+
+        private async Task TryLoadDataAsync(string userName)
+        {
+            try
+            {
+                var user = _databaseReference.Child(USERS).Child(userName).GetValueAsync();
+                await user;
+
+                if (user.Result != null)
+                {
+                    DataSnapshot snapshot = user.Result;
+
+                    Debug.Log(snapshot.Child(NAME).Value.ToString() + " " + snapshot.Child(AGE).Value.ToString());
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
             }
         }
     }
