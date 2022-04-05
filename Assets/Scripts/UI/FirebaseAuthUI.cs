@@ -111,7 +111,7 @@ namespace Game.UI
 
         private string GetAndResetInputField(TMP_InputField inputField)
         {
-            var text = inputField.text;
+            var text = inputField.text.Trim();
             inputField.text = string.Empty;
 
             return text;
